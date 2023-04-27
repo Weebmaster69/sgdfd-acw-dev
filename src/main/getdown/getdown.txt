@@ -1,0 +1,31 @@
+# where our app is hosted on the internets
+appbase = https://github.com/Weebmaster69/sgdfd-acw-client-master/releases/download/1.0
+# the jar file that contains our code
+code = sgdfd-acw-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+# include the latest copy of getdown; app checks at startup whether it should upgrade getdown
+resource = getdown-new.jar
+resource = unmsmActualizador.png
+
+# the main entry point of our app
+class = pe.edu.unmsm.sgdfd.agd.app.Presentacion
+
+# we pass the appdir to our app so that it can upgrade getdown
+apparg = %APPDIR%
+
+# test the %env% mechanism
+jvmarg = -Dappdir=%APPDIR%
+
+# diseño
+ui.name = Actualizador ACW
+ui.background_image=unmsmActualizador.png
+
+#texto barra de progreso
+ui.status = 55, 225, 400, 68
+ui.status_text = ffffff
+ui.text_shadow = 330000
+
+#barra progreso
+ui.progress = 15, 300, 575, 22
+ui.progress_bar = add8e6
+ui.progress_text = ffffff
