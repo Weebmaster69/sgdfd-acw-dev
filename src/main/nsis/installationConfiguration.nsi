@@ -107,7 +107,7 @@ Section "${PROJECT_NAME}" MyApp
   
   SetOutPath "$INSTDIR"
   ;ADD YOUR OWN FILES HERE...
-  File /r ..\..\..\sgdfd-acw.exe
+  File /r ..\..\..\sgdfd-acw-dev.exe
   SetOutPath "$INSTDIR\acw\"
   File /r ..\..\..\target\getdown-stub\*.*
   File myapp.ico
@@ -118,13 +118,13 @@ Section "${PROJECT_NAME}" MyApp
   ;Store installation folder
   WriteRegStr HKCU "Software\${PROJECT_NAME}" "" $INSTDIR
   ;Que se inicie en el navegador
-  WriteRegStr HKCR "${PROJECT_NAME}" "" "URL:sgdfd-acw Protocol"
+  WriteRegStr HKCR "${PROJECT_NAME}" "" "URL:sgdfd-acw-dev Protocol"
   WriteRegStr HKCR "${PROJECT_NAME}" "URL Protocol" ""
-  WriteRegStr HKCR "${PROJECT_NAME}\shell\open\command" "" '"$INSTDIR\sgdfd-acw.exe" "%1"'
+  WriteRegStr HKCR "${PROJECT_NAME}\shell\open\command" "" '"$INSTDIR\sgdfd-acw-dev.exe" "%1"'
   ; se incia junto al sistema"
-  ; WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "sgdfd-acw" "$INSTDIR\getdown.jar"
+  ; WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "sgdfd-acw-dev" "$INSTDIR\getdown.jar"
   ;poner en en el panel de control
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "DisplayName" "sgdfd-acw"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "DisplayName" "sgdfd-acw-dev"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "InstallLocation" "$INSTDIR"
   ;Create uninstaller
