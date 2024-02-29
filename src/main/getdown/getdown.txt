@@ -1,19 +1,19 @@
-# where our app is hosted on the internets
+# dónde está alojada nuestra aplicación en Internet
 appbase = https://github.com/Weebmaster69/sgdfd-acw-dev/releases/download/1.0
-# the jar file that contains our code
-code = sgdfd-acw-dev-1.0-SNAPSHOT-jar-with-dependencies.jar
+# el archivo exe que contiene nuestro código
+code = sgdfd-acw-dev-1.0-SNAPSHOT.exe
 
-# include the latest copy of getdown; app checks at startup whether it should upgrade getdown
-resource = getdown-new.jar
+# incluir la última copia de getdown; la aplicación comprueba al iniciar si debe actualizar getdown
+resource = getdown-new.exe
 resource = unmsmActualizador.png
 
-# the main entry point of our app
+# ruta donde se encuentra el app
 class = pe.edu.unmsm.sgdfd.agd.app.Presentacion
 
-# we pass the appdir to our app so that it can upgrade getdown
+# pasamos el appdir a nuestra aplicación para que pueda actualizar getdown (ruta donde esta instalada la aplicacion)
 apparg = %APPDIR%
 
-# test the %env% mechanism
+# probar el mecanismo %env%
 jvmarg = -Dappdir=%APPDIR%
 
 # diseño

@@ -34,14 +34,14 @@
 
   !define MUI_ABORTWARNING
   !define MUI_HEADERIMAGE
+  !define MUI_LANGDLL_REGISTRY_ENCODING UTF-8
 
 ;--------------------------------
 ;Pages
 
   !insertmacro MUI_PAGE_WELCOME
   !define MUI_PAGE_CUSTOMFUNCTION_SHOW licpageshow
-  !insertmacro MUI_PAGE_LICENSE "License.txt"
-  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_LICENSE "LICENSE"
   !insertmacro MUI_PAGE_DIRECTORY
 
 ;Start Menu Folder Page Configuration
@@ -49,8 +49,6 @@
   !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${PROJECT_NAME}"
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${PROJECT_NAME}"
   
-  !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
-
   !insertmacro MUI_PAGE_INSTFILES
   !define MUI_FINISHPAGE_NOAUTOCLOSE
   !define MUI_FINISHPAGE_RUN
@@ -74,73 +72,67 @@
 RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on)
 
 ;Installer Sections
-Var JavaInstallationPath
-Section "" FINDJAVA    
 
-    DetectTry2:
-    SetRegView 64
-    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\JDK" "CurrentVersion"
-    StrCmp $2 "" NoJava JDK 
-    SetRegView LastUsed
-    
-    JDK:
-    ReadRegStr $5 HKLM "SOFTWARE\JavaSoft\JDK\$2" "JavaHome"  
-    StrCmp $5 "" NoJava GetValue
-
-    GetValue:
-    StrCpy $JavaInstallationPath $5
-    Messagebox MB_OK "Java ya instalado: $JavaInstallationPath"
-    Goto done
-
-    NoJava:
-    SetOutPath $PLUGINSDIR
-    File  "..\..\..\contrib\jdk-11.0.13_windows-x64_bin.exe"
-    Messagebox MB_OK "Java no detectado. Instalando java"  
-    # Install Java
-    ExecWait '"$PLUGINSDIR\jdk-11.0.13_windows-x64_bin.exe"'
-
-    done:   
-    #$JavaInstallationPath should contain the system path to Java
-SectionEnd
 
 Section "${PROJECT_NAME}" MyApp
   
   SetOutPath "$INSTDIR"
   ;ADD YOUR OWN FILES HERE...
-  File /r ..\..\..\sgdfd-acw-dev.exe
+  ; File /r ..\..\..\sgdfd-acw-dev.exe
   SetOutPath "$INSTDIR\acw\"
   File /r ..\..\..\target\getdown-stub\*.*
   File myapp.ico
   File unmsmActualizador.png
   File Readme.txt
   File /r ..\..\..\dll\*.*
+  File /r ..\..\..\JRE\*.*
   
   ;Store installation folder
   WriteRegStr HKCU "Software\${PROJECT_NAME}" "" $INSTDIR
   ;Que se inicie en el navegador
-  WriteRegStr HKCR "${PROJECT_NAME}" "" "URL:sgdfd-acw-dev Protocol"
+  WriteRegStr HKCR "${PROJECT_NAME}" "" "URL:${PROJECT_NAME} Protocol"
   WriteRegStr HKCR "${PROJECT_NAME}" "URL Protocol" ""
-  WriteRegStr HKCR "${PROJECT_NAME}\shell\open\command" "" '"$INSTDIR\sgdfd-acw-dev.exe" "%1"'
+  ; Crea la clave shell en acw
+  WriteRegStr HKCR "${PROJECT_NAME}\shell" "" ""
+
+  ; Crea la clave open en acw\shell
+  WriteRegStr HKCR "${PROJECT_NAME}\shell\open" "" ""
+
+  ; Crea la clave command en acw\shell\open
+  WriteRegStr HKCR "${PROJECT_NAME}\shell\open\command" "" 'cmd.exe /c start "" "$INSTDIR\acw\sgdfd-acw-dev.lnk"'
+
+  ; WriteRegStr HKCR "${PROJECT_NAME}\shell\open\command" "" '"$INSTDIR\acw\getdown.exe" "%1"'
+
   ; se incia junto al sistema"
-  ; WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "sgdfd-acw-dev" "$INSTDIR\getdown.jar"
+  ; WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "sgdfd-acw-dev" "$INSTDIR\getdown.exe"
   ;poner en en el panel de control
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "DisplayName" "sgdfd-acw-dev"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "InstallLocation" "$INSTDIR"
+  
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}" "DisplayIcon" "$INSTDIR\acw\myapp.ico"
+
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   ;Create shortcuts
 
-  ;Start Menu Shortcut
+  ;directorio menu de inicio
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\${PROJECT_NAME}.lnk" "$INSTDIR\acw\getdown.jar" \
+
+  ;shortcut menu de inicio
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\${PROJECT_NAME}.lnk" "$INSTDIR\acw\getdown.exe" \
 	"." \
 	$INSTDIR\acw\myapp.ico 0 SW_SHOWNORMAL ALT|CONTROL|SHIFT|U "${PROJECT_NAME}"
+  ;shortcut en la carpeta de instalación para el inicio desde el navegador
+  CreateShortCut "$INSTDIR\acw\${PROJECT_NAME}.lnk" "$INSTDIR\acw\getdown.exe" \
+	"." \
+	$INSTDIR\acw\myapp.ico 0 SW_SHOWNORMAL ALT|CONTROL|SHIFT|U "${PROJECT_NAME}"
+  ;shortcut para la desinstalacion del programa
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\acw\Uninstall.exe"
 
-  ;Desktop Shortcut
-  CreateShortCut "$DESKTOP\${PROJECT_NAME}.lnk" "$INSTDIR\acw\getdown.jar" \
+  ;Shortcut Escritorio
+  CreateShortCut "$DESKTOP\${PROJECT_NAME}.lnk" "$INSTDIR\acw\getdown.exe" \
 	"." \
 	$INSTDIR\acw\myapp.ico 0 SW_SHOWNORMAL ALT|CONTROL|SHIFT|U "${PROJECT_NAME}"
 SectionEnd
@@ -149,7 +141,7 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_MyApp ${LANG_ENGLISH} "${PROJECT_NAME}"
+  LangString DESC_MyApp ${LANG_SPANISH} "${PROJECT_NAME}"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -177,9 +169,17 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\$StartMenuFolder\${PROJECT_NAME}.lnk"
   RMDir "$SMPROGRAMS\$StartMenuFolder"
 
+  Delete "$DESKTOP\${PROJECT_NAME}.lnk" ; delete desktop shortcut
+
   DeleteRegKey HKCU "Software\${PROJECT_NAME}"
   DeleteRegKey HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}"
   DeleteRegKey HKCR "${PROJECT_NAME}"
+
+  DeleteRegKey HKCR "${PROJECT_NAME}\shell\open\command"
+  DeleteRegKey HKCR "${PROJECT_NAME}\shell\open"
+  DeleteRegKey HKCR "${PROJECT_NAME}\shell"
+  DeleteRegKey HKCR "${PROJECT_NAME}"
+
 
 SectionEnd
 

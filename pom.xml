@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>pe.edu.unmsm.sgdfd.acw</groupId>
     <artifactId>sgdfd-acw-dev</artifactId>
@@ -11,9 +13,33 @@
         <maven.compiler.target>11</maven.compiler.target>
         <getdown.version>1.8.0</getdown.version>
     </properties>
-    
+
     <build>
         <plugins>
+            <plugin>
+                <!-- This copies the JRE used to do the build from java.home - should be 32 bit
+                Windows JRE -->
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/java/JRE</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/JRE</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -31,6 +57,7 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+
             <!-- Getdown -->
             <plugin>
                 <groupId>io.github.rockfireredmoon</groupId>
@@ -45,11 +72,11 @@
                             <goal>applet</goal>
                         </goals>
                         <configuration>
-                        
+
                             <!-- This is the minimum required configuration, see below for more -->
-                            <appbase>https://github.com/Weebmaster69/sgdfd-acw-dev/releases/download/1.0</appbase>	
+                            <appbase>https://github.com/Weebmaster69/sgdfd-acw-dev/releases/download/1.0</appbase>
                             <libPath>lib</libPath>
-                            <mainClass>pe.edu.unmsm.sgdfd.agd.app.Presentacion</mainClass>	
+                            <mainClass>pe.edu.unmsm.sgdfd.agd.app.Presentacion</mainClass>
                             <outputJarVersions>false</outputJarVersions>
                             <verbose>true</verbose>
                             <ui>
@@ -58,36 +85,41 @@
                                 <icons>
                                     <icon>${basedir}/src/main/resources/images/myapp.png</icon>
                                 </icons>
-                            </ui>		
+                            </ui>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
- 
+            <!-- Plugin para generar los archivos del proyecto -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>nsis-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>clean</id>
+                        <phase>clean</phase>
                         <goals>
-                            <goal>generate-headerfile</goal>
-                            <goal>make</goal>
+                            <goal>clean</goal>
                         </goals>
-                        <configuration>
-                            <!--Default Value: C:/Program Files/NSIS/makensis.exe-->
-                            <!-- <makensisBin>C:\Program Files\NSIS\makensis.exe</makensisBin> -->
-                            <!--The name of the installer-->
-                            <makensisBin>C:\Program Files\NSIS\makensis.exe</makensisBin>
-                            <scriptFile>src/main/nsis/installationConfiguration.nsi</scriptFile>
-                            <outputFile>${project.name}-installer.exe</outputFile>
-                            <!--Configures the NSIS installer. See NSIS documentation.-->
-                            
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <executions>
+                    <execution>
+                        <id>install</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -106,7 +138,7 @@
                                 </manifest>
                                 <manifestEntries>
                                     <Permissions>all-permissions</Permissions>
-                                    <Application-Name>agd</Application-Name>        
+                                    <Application-Name>agd</Application-Name>
                                     <Built-By>UNMSM</Built-By>
                                 </manifestEntries>
                             </archive>
@@ -123,21 +155,21 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.7</version>
                 <executions>
-                <execution>
-                    <id>copy-resources</id>
-                    <phase>prepare-package</phase>
-                    <goals>
-                    <goal>copy-resources</goal>
-                    </goals>
-                    <configuration>
-                    <outputDirectory>${project.build.directory}/acw</outputDirectory>
-                    <resources>
-                        <resource>
-                        <directory>src/main/getdown</directory>
-                        </resource>
-                    </resources>
-                    </configuration>
-                </execution>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/acw</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/getdown</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -146,67 +178,156 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                <execution>
-                    <id>copy</id>
-                    <phase>prepare-package</phase>
-                    <goals>
-                    <goal>copy</goal>
-                    </goals>
-                    <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                        <groupId>com.threerings.getdown</groupId>
-                        <artifactId>getdown-launcher</artifactId>
-                        <version>${getdown.version}</version>
-                        <outputDirectory>${project.build.directory}/acw</outputDirectory>
-                        <destFileName>getdown-new.jar</destFileName>
-                        </artifactItem>
-                    </artifactItems>
-                    </configuration>
-                </execution>
+                    <execution>
+                        <id>copy</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.threerings.getdown</groupId>
+                                    <artifactId>getdown-launcher</artifactId>
+                                    <version>${getdown.version}</version>
+                                    <outputDirectory>${project.build.directory}/acw</outputDirectory>
+                                    <destFileName>getdown-new.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
+            <!-- Generacion de los .exe usando launch4j -->
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <!-- Generacion del acw.exe -->
+                    <execution>
+                        <id>l4j-acw</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <jar>
+                                ${project.build.directory}/acw/${project.build.finalName}-jar-with-dependencies.jar</jar>
+                            <outfile>target/acw/${project.build.finalName}.exe</outfile>
+                            <errTitle>Error</errTitle>
+                            <classPath>
+                                <mainClass>pe.edu.unmsm.sgdfd.agd.app.Presentacion</mainClass>
+                            </classPath>
+                            <jre>
+                                <path>JRE</path> <!-- Ruta a la instalación de JRE -->
+                            </jre>
+                        </configuration>
+                    </execution>
+                    <!-- Generacion del getdown.exe -->
+                    <execution>
+                        <id>l4j-getdown</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <jar>${project.build.directory}/getdown-stub/getdown.jar</jar>
+                            <outfile>target/getdown-stub/getdown.exe</outfile>
+                            <errTitle>Error</errTitle>
+                            <classPath>
+                                <mainClass>com.threerings.getdown.launcher.GetdownApp</mainClass>
+                            </classPath>
+                            <jre>
+                                <path>JRE</path> <!-- Ruta a la instalación de JRE -->
+                            </jre>
+                        </configuration>
+                    </execution>
+                    <!-- Generacion del getdown-new.exe -->
+                    <execution>
+                        <id>l4j-getdown-new</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <jar>${project.build.directory}/acw/getdown-new.jar</jar>
+                            <outfile>target/acw/getdown-new.exe</outfile>
+                            <errTitle>Error</errTitle>
+                            <classPath>
+                                <mainClass>com.threerings.getdown.launcher.GetdownApp</mainClass>
+                            </classPath>
+                            <jre>
+                                <path>JRE</path> <!-- Ruta a la instalación de JRE -->
+                            </jre>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- generate a digest.txt in target/acw -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
                 <executions>
-                <execution>
-                    <id>digest</id>
-                    <phase>package</phase>
-                    <configuration>
-                    <target>
-                        <taskdef name="digest" classname="com.threerings.getdown.tools.DigesterTask"
-                                classpath="maven.plugin.classpath"/>
-                        <digest appdir="${project.build.directory}/acw"/>
-                    </target>
-                    </configuration>
-                    <goals>
-                    <goal>run</goal>
-                    </goals>
-                </execution>
+                    <execution>
+                        <id>digest</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <taskdef name="digest"
+                                    classname="com.threerings.getdown.tools.DigesterTask"
+                                    classpath="maven.plugin.classpath" />
+                                <digest appdir="${project.build.directory}/acw" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <dependencies>
-                <dependency>
-                    <groupId>com.threerings.getdown</groupId>
-                    <artifactId>getdown-ant</artifactId>
-                    <version>${getdown.version}</version>
-                </dependency>
+                    <dependency>
+                        <groupId>com.threerings.getdown</groupId>
+                        <artifactId>getdown-ant</artifactId>
+                        <version>${getdown.version}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
-            
+            <!-- Plugin para ejecutar el script de instalación de NSIS -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>nsis-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <executions>
+                    <execution>
+                        <id>run-installer</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>generate-headerfile</goal>
+                            <goal>make</goal>
+                        </goals>
+                        <configuration>
+                            <makensisBin>C:\Program Files\NSIS\makensis.exe</makensisBin>
+                            <scriptFile>src/main/nsis/installationConfiguration.nsi</scriptFile>
+                            <outputFile>${project.name}-installer.exe</outputFile>                            
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.threerings.getdown</groupId>
             <artifactId>getdown-launcher</artifactId>
             <version>${getdown.version}</version>
         </dependency>
-        
         <!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
         <dependency>
             <groupId>javax.websocket</groupId>
@@ -214,7 +335,7 @@
             <version>1.1</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/javax.enterprise/cdi-api -->
         <dependency>
             <groupId>javax.enterprise</groupId>
@@ -251,22 +372,22 @@
             <artifactId>jacob</artifactId>
             <version>1.18</version>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-core-asl -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.13</version>
         </dependency>
-    
-        <!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-jaxrs -->      
+
+        <!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-jaxrs -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>
             <version>1.9.13</version>
         </dependency>
 
-        
+
         <!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -274,7 +395,7 @@
             <version>1.9.13</version>
         </dependency>
 
-<!--         https://mvnrepository.com/artifact/org.netbeans.external/AbsoluteLayout 
+        <!--         https://mvnrepository.com/artifact/org.netbeans.external/AbsoluteLayout 
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>AbsoluteLayout</artifactId>
@@ -312,14 +433,14 @@
             <version>1.3.2</version>
         </dependency>
         -->
-        
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- para Lists, Collections2 usado para filtrar Listas -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -332,14 +453,14 @@
             <artifactId>json</artifactId>
             <version>20160810</version><!--$NO-MVN-MAN-VER$-->
         </dependency>
-        
+
         <!-- jCalendar-->
         <dependency>
             <groupId>com.toedter</groupId>
             <artifactId>jcalendar</artifactId>
             <version>1.4</version>
         </dependency>
-        
+
         <!-- actualizaciones -->
         <dependency>
             <groupId>org.update4j</groupId>
@@ -366,20 +487,20 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.9.6</version>
-        </dependency>   
+        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.2</version>
         </dependency>
-          
+
         <!--insertar imagenes-->
         <dependency>
             <groupId>com.aspose</groupId>
             <artifactId>aspose-words</artifactId>
             <version>16.8.0</version>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>3.17</version>
@@ -390,7 +511,7 @@
             <artifactId>log4j-api</artifactId>
             <version>2.11.2</version>
         </dependency>
-		
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -406,7 +527,7 @@
             <artifactId>weblaf-1.29</artifactId>
             <version>SNAPSHOT</version>
         </dependency>
-        
+
         <!--Lectura de excel-->
         <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
         <dependency>
@@ -421,7 +542,7 @@
             <artifactId>poi-ooxml</artifactId>
             <version>3.17</version>
         </dependency>
-        
+
         <!--ITEXT PARA VALIDAR FIRMAS-->
         <!-- https://mvnrepository.com/artifact/com.itextpdf/itextpdf -->
         <dependency>
@@ -429,9 +550,8 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.2</version>
         </dependency>
-
     </dependencies>
-    
+
     <repositories>
         <repository>
             <id>unknown-jars-temp-repo</id>
@@ -440,5 +560,5 @@
         </repository>
     </repositories>
     <name>sgdfd-acw-dev</name>
-    
+
 </project>

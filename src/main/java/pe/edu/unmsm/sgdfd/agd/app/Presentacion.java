@@ -51,9 +51,9 @@ public class Presentacion {
             new Thread() {
                 @Override
                 public void run() {
-                    LaunchUtil.upgradeGetdown(new File(appdir, "getdown-old.jar"),
-                                                new File(appdir, "getdown.jar"),
-                                                new File(appdir, "getdown-new.jar"));
+                    LaunchUtil.upgradeGetdown(new File(appdir, "getdown-old.exe"),
+                                                new File(appdir, "getdown.exe"),
+                                                new File(appdir, "getdown-new.exe"));
                 }
             }.start();
         }
